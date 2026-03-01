@@ -1,0 +1,414 @@
+{% extends 'materi/base.html' %}
+{% load static %}
+
+{% block title %}E-Library - E-Academic{% endblock %}
+
+{% block content %}
+
+<section class="hero-library-modern">
+    <div class="hero-slider">
+        <div class="slide slide-1" style="background-image: url('{% static 'img/img1.jpg' %}');"></div>
+        <div class="slide slide-2" style="background-image: url('{% static 'img/img2.jpeg' %}');"></div>
+        <div class="slide slide-3" style="background-image: url('{% static 'img/img3.JPG' %}');"></div>
+    </div>
+    <div class="hero-overlay-refined"></div>
+    <div class="container hero-content text-center text-white animate-up">
+        <h1 class="fw-900 mb-2 hero-brand-title-large">ELECTRICAL LIBRARY</h1>
+        <p class="text-white-50 mx-auto hero-description">
+            Akses materi kuliah secara terorganisir berdasarkan Program Studi dan Semester.
+        </p>
+    </div>
+</section>
+
+<section class="search-section-library">
+    <div class="container-fluid px-2 px-md-5 overlap-up-library">
+        <div class="glass-search-box mx-auto shadow-sm animate-up delay-1 mb-4">
+            <form action="{% url 'list_materi' %}" method="GET" class="row g-0 align-items-center p-1">
+                {% if filter_prodi %}<input type="hidden" name="prodi" value="{{ filter_prodi }}">{% endif %}
+                {% if filter_semester %}<input type="hidden" name="semester" value="{{ filter_semester }}">{% endif %}
+                
+                <div class="col-8 col-md-9">
+                    <div class="input-group">
+                        <span class="input-group-text bg-transparent border-0 ps-3 pe-2">
+                            <i class="fa fa-search text-muted"></i>
+                        </span>
+                        <input type="text" name="keyword" class="form-control border-0 shadow-none bg-transparent text-dark py-1" 
+                               placeholder="Cari Mata Kuliah..." value="{{ request.GET.keyword|default:'' }}">
+                    </div>
+                </div>
+                <div class="col-4 col-md-3">
+                    <button type="submit" class="btn btn-primary w-100 rounded-pill fw-bold gradient-blue btn-sm py-2">CARI</button>
+                </div>
+            </form>
+        </div>
+
+        <div class="d-flex justify-content-center animate-up delay-2">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb custom-breadcrumb-pill px-3 py-1 shadow-sm bg-white m-0">
+                    <li class="breadcrumb-item"><a href="{% url 'list_materi' %}">Library</a></li>
+                    {% if filter_prodi %}
+                        <li class="breadcrumb-item {% if not filter_semester %}active{% endif %}">
+                            <a href="?prodi={{ filter_prodi }}">{{ filter_prodi }}</a>
+                        </li>
+                    {% endif %}
+                    {% if filter_semester %}
+                        <li class="breadcrumb-item active">Semester {{ filter_semester }}</li>
+                    {% endif %}
+                </ol>
+            </nav>
+        </div>
+    </div>
+</section>
+
+<section class="pt-4 pb-5 section-gray" style="min-height: 50vh;">
+    <div class="container-fluid px-2 px-md-5 py-2">
+
+        {% if request.GET.keyword or filter_semester or filter_prodi == 'MKU' %}
+            <div class="text-center mb-5 reveal-on-scroll">
+                <h3 class="fw-bold text-dark mb-1">
+                    {% if request.GET.keyword %}Hasil Pencarian: "{{ request.GET.keyword }}"
+                    {% elif filter_prodi == 'MKU' %}Mata Kuliah Umum (MKU)
+                    {% else %}Mata Kuliah Semester {{ filter_semester }}{% endif %}
+                </h3>
+                <div class="divider-minimal mx-auto mt-2"></div>
+            </div>
+
+            <div class="row justify-content-center reveal-on-scroll gy-5"> 
+                <div class="col-12 col-lg-10">
+                    <div class="card card-protrude-list p-0 overflow-hidden border-0 shadow-lg">
+                        <div class="d-flex justify-content-between align-items-center p-4 border-bottom bg-light">
+                            <h5 class="fw-bold text-dark m-0">Daftar Dokumen</h5>
+                            <span class="badge bg-primary rounded-pill px-4 py-2">{{ materi.paginator.count }} Materi</span>
+                        </div>
+                        <div class="list-group list-group-flush">
+                            {% for m in materi %}
+                            <a href="{{ m.link_google_drive }}" target="_blank" class="list-group-item list-group-item-action d-flex align-items-center py-4 px-4 materi-row-hover">
+                                <div class="me-4 flex-shrink-0"><div class="mk-icon-square-large"><i class="fa fa-file-pdf-o"></i></div></div>
+                                <div class="flex-grow-1 text-start overflow-hidden">
+                                    <h5 class="fw-bold text-dark mb-1 text-truncate">{{ m.mata_kuliah }}</h5>
+                                    <p class="text-muted text-truncate mb-0">{{ m.judul }}</p>
+                                </div>
+                                <div class="flex-shrink-0 ms-3">
+                                    <span class="btn-capsule-outline-blue">Buka Materi <i class="fa fa-external-link ms-1"></i></span>
+                                </div>
+                            </a>
+                            {% empty %}
+                            <div class="p-5 text-center text-muted">Materi tidak ditemukan.</div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        {% elif filter_prodi %}
+            <div class="text-center mb-5 reveal-on-scroll">
+                <h2 class="fw-900 text-dark mb-1">PILIH SEMESTER</h2>
+                <div class="divider-minimal mx-auto mt-2"></div>
+            </div>
+            
+            <div class="semester-grid-wrapper">
+                <div class="row g-4 g-lg-5 justify-content-center semester-gap-responsive">
+                    {% for i in "12345" %} 
+                    <div class="col-4 col-lg-custom-5 reveal-on-scroll">
+                        <a href="?prodi={{ filter_prodi }}&semester={{ i }}" class="card-protrude-library-large text-decoration-none h-100">
+                            <div class="icon-circle-box-large mb-4 bg-soft-blue">
+                                <span class="fw-900 text-primary">{{ i }}</span>
+                            </div>
+                            <h4 class="fw-bold text-dark mb-2 semester-title">SEMESTER {{ i }}</h4>
+                            <span class="btn-explore-link-bold">BUKA FOLDER <i class="fa fa-arrow-right ms-2"></i></span>
+                        </a>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+
+        {% else %}
+            <div class="text-center mb-5 reveal-on-scroll">
+                <h2 class="fw-900 text-dark mb-1">PILIH PROGRAM STUDI</h2>
+                <div class="divider-minimal mx-auto mt-2"></div>
+            </div>
+            
+            <div class="prodi-grid-custom">
+                <div class="layout-laptop">
+                    <div class="row g-5 justify-content-center mb-5">
+                        {% for p_code, p_name, p_bg in prodi_data|slice:":3" %}
+                        <div class="col-12 col-md-4 reveal-on-scroll"> 
+                            <a href="?prodi={{ p_code }}" class="prodi-card-v12 text-decoration-none d-block">
+                                <div class="icon-box-v12 mb-4 mx-auto" style="background-color: {{ p_bg }}20;">
+                                    {% if p_code == 'PTIK' %}<i class="fa fa-code" style="color: #3b82f6;"></i>
+                                    {% elif p_code == 'PTE' %}<i class="fa fa-bolt" style="color: #dc2626;"></i>
+                                    {% elif p_code == 'TE' %}<i class="fa fa-cogs" style="color: #7c3aed;"></i>
+                                    {% elif p_code == 'TK' %}<i class="fa fa-microchip" style="color: #059669;"></i>
+                                    {% else %}<i class="fa fa-university" style="color: #d97706;"></i>{% endif %}
+                                </div>
+                                <h2 class="fw-900 text-dark mb-2 prodi-title-v12">{{ p_name }}</h2>
+                                <span class="btn-explore-link-bold">BUKA FOLDER <i class="fa fa-folder-open ms-2"></i></span>
+                            </a>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    <div class="row g-5 justify-content-center">
+                        {% for p_code, p_name, p_bg in prodi_data|slice:"3:5" %}
+                        <div class="col-12 col-md-4 reveal-on-scroll"> 
+                            <a href="?prodi={{ p_code }}" class="prodi-card-v12 text-decoration-none d-block">
+                                <div class="icon-box-v12 mb-4 mx-auto" style="background-color: {{ p_bg }}20;">
+                                    {% if p_code == 'PTIK' %}<i class="fa fa-code" style="color: #3b82f6;"></i>
+                                    {% elif p_code == 'PTE' %}<i class="fa fa-bolt" style="color: #dc2626;"></i>
+                                    {% elif p_code == 'TE' %}<i class="fa fa-cogs" style="color: #7c3aed;"></i>
+                                    {% elif p_code == 'TK' %}<i class="fa fa-microchip" style="color: #059669;"></i>
+                                    {% else %}<i class="fa fa-university" style="color: #d97706;"></i>{% endif %}
+                                </div>
+                                <h2 class="fw-900 text-dark mb-2 prodi-title-v12">{{ p_name }}</h2>
+                                <span class="btn-explore-link-bold">BUKA FOLDER <i class="fa fa-folder-open ms-2"></i></span>
+                            </a>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <div class="layout-hp">
+                    <div class="row g-4 justify-content-center mb-4">
+                        {% for p_code, p_name, p_bg in prodi_data|slice:":2" %}
+                        <div class="col-6 reveal-on-scroll">
+                            <a href="?prodi={{ p_code }}" class="prodi-card-giant-v13 text-decoration-none d-block">
+                                <div class="icon-box-giant-v13 mb-4 mx-auto" style="background-color: {{ p_bg }}20;">
+                                    {% if p_code == 'PTIK' %}<i class="fa fa-code" style="color: #3b82f6;"></i>
+                                    {% elif p_code == 'PTE' %}<i class="fa fa-bolt" style="color: #dc2626;"></i>
+                                    {% elif p_code == 'TE' %}<i class="fa fa-cogs" style="color: #7c3aed;"></i>
+                                    {% elif p_code == 'TK' %}<i class="fa fa-microchip" style="color: #059669;"></i>
+                                    {% else %}<i class="fa fa-university" style="color: #d97706;"></i>{% endif %}
+                                </div>
+                                <h2 class="fw-900 text-dark mb-2">{{ p_name }}</h2>
+                                <span class="btn-explore-link-bold">BUKA FOLDER</span>
+                            </a>
+                        </div>
+                        {% endfor %}
+                    </div>
+
+                    <div class="row g-4 justify-content-center mb-4">
+                        {% for p_code, p_name, p_bg in prodi_data|slice:"2:4" %}
+                        <div class="col-6 reveal-on-scroll">
+                            <a href="?prodi={{ p_code }}" class="prodi-card-giant-v13 text-decoration-none d-block">
+                                <div class="icon-box-giant-v13 mb-4 mx-auto" style="background-color: {{ p_bg }}20;">
+                                    {% if p_code == 'PTIK' %}<i class="fa fa-code" style="color: #3b82f6;"></i>
+                                    {% elif p_code == 'PTE' %}<i class="fa fa-bolt" style="color: #dc2626;"></i>
+                                    {% elif p_code == 'TE' %}<i class="fa fa-cogs" style="color: #7c3aed;"></i>
+                                    {% elif p_code == 'TK' %}<i class="fa fa-microchip" style="color: #059669;"></i>
+                                    {% else %}<i class="fa fa-university" style="color: #d97706;"></i>{% endif %}
+                                </div>
+                                <h2 class="fw-900 text-dark mb-2">{{ p_name }}</h2>
+                                <span class="btn-explore-link-bold">BUKA FOLDER</span>
+                            </a>
+                        </div>
+                        {% endfor %}
+                    </div>
+
+                    <div class="row g-4 justify-content-center hp-row-gap">
+                        {% for p_code, p_name, p_bg in prodi_data|slice:"4:5" %}
+                        <div class="col-8 reveal-on-scroll">
+                            <a href="?prodi={{ p_code }}" class="prodi-card-giant-v13 text-decoration-none d-block">
+                                <div class="icon-box-giant-v13 mb-4 mx-auto" style="background-color: {{ p_bg }}20;">
+                                    <i class="fa fa-university" style="color: #d97706;"></i>
+                                </div>
+                                <h2 class="fw-900 text-dark mb-2">{{ p_name }}</h2>
+                                <span class="btn-explore-link-bold">BUKA FOLDER</span>
+                            </a>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        {% endif %}
+
+    </div>
+</section>
+
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@800;900&family=Inter:wght@400;600;700&display=swap');
+    body { font-family: 'Inter', sans-serif; overflow-x: hidden; width: 100%; }
+
+    .breadcrumb-item a {
+        text-decoration: none;
+        color: #6c757d;
+        font-weight: 700;
+        transition: all 0.2s cubic-bezier(0.25, 0.8, 0.25, 1);
+        display: inline-block;
+    }
+    .breadcrumb-item a:hover {
+        color: #3b82f6;
+        transform: translateY(-1px);
+    }
+    .breadcrumb-item a:active {
+        transform: scale(0.95); 
+        color: #1d4ed8; 
+    }
+    .breadcrumb-item.active {
+        font-weight: 900;
+        color: #3b82f6;
+    }
+
+    .prodi-card-v12, .prodi-card-giant-v13 {
+        text-align: center !important; 
+    }
+
+    /* --- LOGIKA KHUSUS LAPTOP --- */
+    @media (min-width: 1201px) {
+        .navbar .container-fluid { padding: 0 15px !important; }
+        .navbar-brand { margin-right: auto !important; }
+        
+        .hero-library-modern { height: 60vh !important; min-height: 500px !important; }
+        .hero-content { padding-top: 150px !important; }
+        .hero-brand-title-large { font-size: 2.5rem !important; }
+        .hero-description { font-size: 1rem !important; max-width: 700px; }
+        
+        .layout-laptop { display: block; }
+        .layout-hp { display: none; }
+
+        .prodi-card-v12 { padding: 40px 20px !important; border-radius: 30px !important; }
+        .icon-box-v12 { width: 90px !important; height: 90px !important; font-size: 2.2rem !important; }
+        .prodi-title-v12 { font-size: 1.5rem !important; }
+        
+        .col-lg-custom-5 { flex: 0 0 auto; width: 20%; } 
+        
+        .semester-title { font-size: 1.2rem !important; }
+
+        .card-protrude-library-large { 
+            padding: 40px 20px !important; 
+            border-radius: 30px !important; 
+            text-align: center; 
+            background: #fff; 
+            box-shadow: 0 15px 30px rgba(0,0,0,0.05); 
+            transition: 0.3s;
+            height: 100%; 
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+        .icon-circle-box-large { width: 80px !important; height: 80px !important; font-size: 2rem !important; border-radius: 25px !important; display: flex; align-items: center; justify-content: center; margin: 0 auto; }
+    }
+
+    /* --- LOGIKA KHUSUS HP MODE DESKTOP & MOBILE --- */
+    @media (max-width: 1200px) {
+        /* Note 1: Navbar Disamakan Persis dengan Home.html */
+        .navbar .container { 
+            padding-left: 25px !important; 
+            padding-right: 25px !important; 
+            justify-content: space-between !important;
+        }
+        .navbar-brand { 
+            margin-left: 0 !important; 
+            padding-left: 0 !important;
+            font-size: 1.5rem !important; /* Diperbesar */
+        }
+        .navbar-nav { 
+            margin-right: 0 !important; 
+            padding-right: 0 !important;
+            flex-direction: row !important;
+            gap: 15px !important;
+        }
+        .nav-link {
+            font-size: 0.9rem !important; /* Diperbesar */
+        }
+        .btn-nav-upload {
+            font-size: 0.85rem !important; /* Diperbesar */
+        }
+        #navbarNav { margin-right: 0 !important; justify-content: flex-end !important; }
+        .navbar-toggler { display: none !important; }
+        
+        .layout-laptop { display: none; }
+        .layout-hp { display: block; }
+
+        .hero-brand-title-large { 
+            font-size: 2rem !important; 
+            letter-spacing: 2px !important; 
+            white-space: nowrap !important; 
+        }
+        .hero-description { font-size: 1.3rem !important; font-weight: 600 !important; max-width: 95% !important; }
+        
+        .hero-content { padding-top: 110px !important; }
+        .hero-library-modern { height: 25vh !important; min-height: 280px !important; }
+        
+        .prodi-card-giant-v13 { padding: 60px 20px !important; border-radius: 40px !important; }
+        .icon-box-giant-v13 { width: 100px !important; height: 100px !important; font-size: 3.5rem !important; }
+        
+        .hp-row-gap { margin-bottom: 5rem !important; } 
+        .g-5 { --bs-gutter-y: 2rem !important; }
+
+        .semester-gap-responsive { 
+            row-gap: 4rem !important; 
+        } 
+
+        .card-protrude-library-large { padding: 60px 20px !important; border-radius: 45px !important; text-align: center; background: #fff; box-shadow: 0 20px 50px rgba(0,0,0,0.06); transition: 0.3s; display: block; }
+        .icon-circle-box-large { width: 110px !important; height: 110px !important; font-size: 3rem !important; border-radius: 35px !important; display: flex; align-items: center; justify-content: center; margin: 0 auto; }
+    }
+
+    /* --- GLOBAL CSS --- */
+    .hero-library-modern { height: 35vh; min-height: 300px; position: relative; display: flex; align-items: center; justify-content: center; margin-top: -85px; overflow: hidden; background: #000; }
+    .hero-slider { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 0; }
+    .slide { position: absolute; width: 100%; height: 100%; background-size: cover; background-position: center; opacity: 0; animation: smoothSlideshow 15s infinite linear; }
+    @keyframes smoothSlideshow { 0%, 33.33% { opacity: 1; z-index: 3; } 38.33%, 100% { opacity: 0; z-index: 1; } }
+    .slide-1 { animation-delay: 0s; } .slide-2 { animation-delay: 5s; } .slide-3 { animation-delay: 10s; }
+    
+    .hero-brand-title-large { font-family: 'Montserrat', sans-serif; letter-spacing: 8px; font-size: 3.2rem; }
+    .hero-overlay-refined { position: absolute; width: 100%; height: 100%; background: linear-gradient(rgba(15, 23, 42, 0.7), rgba(15, 23, 42, 0.85)); z-index: 4; }
+    .hero-content { position: relative; z-index: 5; padding-top: 80px; }
+
+    .prodi-card-giant-v13, .prodi-card-v12, .card-protrude-library-large { 
+        background: #fff; 
+        border: 2px solid transparent; 
+        transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); 
+    }
+    
+    .prodi-card-giant-v13:hover, .prodi-card-v12:hover, .card-protrude-library-large:hover { 
+        transform: translateY(-8px); 
+        border-color: #3b82f6; 
+        box-shadow: 0 20px 40px rgba(59,130,246,0.15); 
+    }
+    
+    .prodi-card-giant-v13:active, .prodi-card-v12:active, .card-protrude-library-large:active {
+        transform: scale(0.98);
+        background-color: #eff6ff; 
+        border-color: #3b82f6;
+    }
+
+    .icon-box-giant-v13, .icon-box-v12, .icon-circle-box-large { display: flex; align-items: center; justify-content: center; transition: 0.4s; }
+    
+    .materi-row-hover {
+        transition: all 0.3s ease;
+        border-left: 4px solid transparent;
+    }
+    .materi-row-hover:hover {
+        background-color: #f8fafc;
+        border-left-color: #3b82f6;
+        transform: translateX(5px);
+        box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+    }
+    .materi-row-hover:active {
+        background-color: #eff6ff;
+    }
+
+    .overlap-up-library { margin-top: -50px; position: relative; z-index: 100; }
+    .glass-search-box { background: #ffffff; border-radius: 60px; max-width: 800px; padding: 10px; border: 1px solid rgba(0,0,0,0.05); }
+    .btn-capsule-outline-blue { border: 2.5px solid #3b82f6; color: #3b82f6; padding: 10px 25px; border-radius: 50px; font-weight: 800; font-size: 0.9rem; transition: 0.3s; display: inline-block; }
+    .btn-capsule-outline-blue:hover { background: #3b82f6; color: #fff; }
+    .fw-900 { font-weight: 900 !important; }
+    .btn-explore-link-bold { font-size: 1rem; font-weight: 900; color: #3b82f6; text-transform: uppercase; letter-spacing: 2px; margin-top: 20px; display: block; }
+    .bg-soft-blue { background-color: #eff6ff; }
+
+    .reveal-on-scroll { opacity: 0; transform: translateY(80px); transition: all 1s cubic-bezier(0.165, 0.84, 0.44, 1); }
+    .reveal-on-scroll.active { opacity: 1; transform: translateY(0); }
+    .section-gray { background-color: #f8fafc; }
+</style>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => { 
+                if (entry.isIntersecting) entry.target.classList.add('active'); 
+            });
+        }, { threshold: 0.1 });
+        document.querySelectorAll('.reveal-on-scroll').forEach((el) => observer.observe(el));
+    });
+</script>
+
+{% endblock %}

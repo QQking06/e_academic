@@ -1,0 +1,297 @@
+{% extends 'materi/base.html' %}
+{% load static %}
+
+{% block title %}Pendataan Prestasi - E-Academic{% endblock %}
+
+{% block content %}
+
+<section class="hero-upload">
+    <div class="hero-pattern"></div>
+
+    <div class="container animate-up position-relative" style="z-index: 2;">
+        <div class="mb-3">
+            <div class="icon-wrapper mx-auto">
+                <i class="fa fa-trophy text-warning" style="font-size: 40px; text-shadow: 0 0 25px rgba(255,193,7,0.8);"></i>
+            </div>
+        </div>
+        <h1 class="fw-bold display-5 mb-3 text-white hero-title">
+            PENDATAAN PRESTASI MAHASISWA
+        </h1>
+        <p class="lead text-white-50 mx-auto hero-desc">
+            Raih prestasi membanggakan? Laporkan pencapaianmu di sini agar<br>
+            tercatat di Elektro Bangga dan memotivasi temanmu.
+        </p>
+    </div>
+</section>
+
+<section class="form-section">
+    <div class="container form-container">
+        
+        <div class="row justify-content-center">
+            <div class="col-lg-9 animate-up delay-1">
+                
+                <div class="card border-0 shadow-lg rounded-4 overflow-hidden bg-white">
+                    
+                    <div class="card-header bg-white border-bottom p-4">
+                        <h5 class="fw-bold text-dark m-0 d-flex align-items-center">
+                            <i class="fa fa-star text-warning me-2"></i> Formulir Data Prestasi
+                        </h5>
+                    </div>
+
+                    <div class="card-body p-4 p-md-5">
+                        
+                        {% if messages %}
+                            {% for message in messages %}
+                                <div class="alert alert-{{ message.tags }} rounded-3 text-center small mb-4 shadow-sm border-0">
+                                    {% if message.tags == 'error' %}<i class="fa fa-exclamation-circle me-1"></i>{% endif %}
+                                    {% if message.tags == 'success' %}<i class="fa fa-check-circle me-1"></i>{% endif %}
+                                    {{ message }}
+                                </div>
+                            {% endfor %}
+                        {% endif %}
+
+                        <form method="POST" enctype="multipart/form-data">
+                            {% csrf_token %}
+
+                            <h6 class="fw-bold text-primary text-uppercase mb-4 section-title">
+                                <i class="fa fa-user-circle me-1"></i> Identitas Mahasiswa
+                            </h6>
+
+                            <div class="row g-4 mb-4">
+                                <div class="col-md-6">
+                                    <label class="form-label small fw-bold text-muted">Nama Lengkap & NIM <span class="text-danger">*</span></label>
+                                    <input type="text" name="nama_mahasiswa" class="form-control bg-light border-0 py-3 px-3" placeholder="Contoh: Budi Santoso (5101419001)" required>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <label class="form-label small fw-bold text-muted">Program Studi <span class="text-danger">*</span></label>
+                                    <select name="prodi" class="form-select bg-light border-0 py-3 px-3 cursor-pointer" required>
+                                        <option value="" selected disabled>-- Pilih Prodi --</option>
+                                        <option value="PTIK">Pendidikan Teknik Informatika & Komputer</option>
+                                        <option value="PTE">Pendidikan Teknik Elektro</option>
+                                        <option value="TE">Teknik Elektro</option>
+                                        <option value="TK">Teknik Komputer</option>
+                                    </select>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <label class="form-label small fw-bold text-muted">No. WhatsApp <span class="text-danger">*</span></label>
+                                    <input type="number" name="no_hp" class="form-control bg-light border-0 py-3 px-3" placeholder="08xxxxxxxxxx" required>
+                                </div>
+                            </div>
+
+                            <hr class="border-light my-5">
+
+                            <h6 class="fw-bold text-warning text-uppercase mb-4 section-title">
+                                <i class="fa fa-trophy me-1"></i> Detail Kompetisi
+                            </h6>
+
+                            <div class="row g-4 mb-4">
+                                <div class="col-12">
+                                    <label class="form-label small fw-bold text-muted">Nama Kompetisi / Lomba <span class="text-danger">*</span></label>
+                                    <input type="text" name="nama_lomba" class="form-control bg-light border-0 py-3 px-3" placeholder="Contoh: Gemastik 2025 Divisi UI/UX" required>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <label class="form-label small fw-bold text-muted">Penyelenggara <span class="text-danger">*</span></label>
+                                    <input type="text" name="penyelenggara" class="form-control bg-light border-0 py-3 px-3" placeholder="Contoh: Kemendikbud Ristek" required>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <label class="form-label small fw-bold text-muted">Tempat & Tanggal Pelaksanaan</label>
+                                    <input type="text" name="tempat_tanggal" class="form-control bg-light border-0 py-3 px-3" placeholder="Contoh: Jakarta, 20-25 Oktober 2025">
+                                </div>
+
+                                <div class="col-12">
+                                    <label class="form-label small fw-bold text-muted">Link Info Lomba (Instagram/Web)</label>
+                                    <input type="url" name="url_penyelenggara" class="form-control bg-light border-0 py-3 px-3" placeholder="https://...">
+                                </div>
+                            </div>
+
+                            <hr class="border-light my-5">
+
+                            <h6 class="fw-bold text-success text-uppercase mb-4 section-title">
+                                <i class="fa fa-certificate me-1"></i> Klasifikasi Juara
+                            </h6>
+
+                            <div class="row g-4 mb-4">
+                                <div class="col-md-6">
+                                    <label class="form-label small fw-bold text-muted">Jenis Kepesertaan</label>
+                                    <select name="jenis_lomba" class="form-select bg-light border-0 py-3 px-3 cursor-pointer">
+                                        <option value="Individu">Individu / Perorangan</option>
+                                        <option value="Tim">Tim / Kelompok</option>
+                                    </select>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <label class="form-label small fw-bold text-muted">Tingkat Kompetisi</label>
+                                    <select name="tingkat" class="form-select bg-light border-0 py-3 px-3 cursor-pointer">
+                                        <option value="Internasional">Internasional</option>
+                                        <option value="Nasional">Nasional</option>
+                                        <option value="Provinsi">Provinsi</option>
+                                        <option value="Kota">Kabupaten/Kota</option>
+                                    </select>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <label class="form-label small fw-bold text-muted">Kategori Lomba</label>
+                                    <select name="kategori" class="form-select bg-light border-0 py-3 px-3 cursor-pointer">
+                                        <option value="Akademik">Akademik (Karya Tulis, Robotik)</option>
+                                        <option value="Non-Akademik">Non-Akademik (Olahraga, Seni)</option>
+                                    </select>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <label class="form-label small fw-bold text-muted">Capaian Juara <span class="text-danger">*</span></label>
+                                    <input type="text" name="juara" class="form-control bg-light border-0 py-3 px-3" placeholder="Contoh: Juara 1 / Medali Emas" required>
+                                </div>
+                            </div>
+
+                            <hr class="border-light my-5">
+
+                            <h6 class="fw-bold text-info text-uppercase mb-4 section-title">
+                                <i class="fa fa-folder-open me-1"></i> Bukti Dukung
+                            </h6>
+
+                            <div class="row g-4">
+                                <div class="col-md-6">
+                                    <label class="form-label small fw-bold text-muted">No. SK / Surat Tugas (Jika ada)</label>
+                                    <input type="text" name="no_sk" class="form-control bg-light border-0 py-3 px-3" placeholder="Nomor Surat...">
+                                </div>
+
+                                <div class="col-md-6">
+                                    <label class="form-label small fw-bold text-muted">Link G-Drive Sertifikat <span class="text-danger">*</span></label>
+                                    <input type="url" name="link_sertifikat" class="form-control bg-light border-0 py-3 px-3" placeholder="Pastikan akses link Public" required>
+                                </div>
+
+                                <div class="col-12">
+                                    <label class="form-label small fw-bold text-muted">Foto Dokumentasi Penyerahan Juara <span class="text-danger">*</span></label>
+                                    
+                                    <div class="upload-area p-5 text-center rounded-3 border-2 border-dashed bg-light position-relative cursor-pointer hover-effect">
+                                        <input type="file" name="foto_diri" class="file-input-absolute" accept="image/*" required onchange="updateFileName(this)">
+                                        
+                                        <div id="upload-placeholder">
+                                            <div class="mb-3 bounce-hover">
+                                                <div class="bg-white rounded-circle d-inline-block p-3 shadow-sm">
+                                                    <i class="fa fa-camera fa-2x text-warning"></i>
+                                                </div>
+                                            </div>
+                                            <h6 class="fw-bold text-dark">Klik untuk Upload Foto</h6>
+                                            <p class="small text-muted mb-0">Format: JPG, PNG. Maksimal 2MB.</p>
+                                        </div>
+
+                                        <div id="file-info" class="d-none mt-2 animate-up">
+                                            <div class="badge bg-success px-4 py-3 rounded-pill shadow-sm">
+                                                <i class="fa fa-check-circle me-2"></i> <span id="filename-text" class="fw-bold">foto.jpg</span>
+                                            </div>
+                                            <p class="small text-muted mt-3 mb-0">Klik area ini lagi jika ingin mengganti foto.</p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="col-12 mt-2">
+                                    <div class="form-check p-3 bg-light rounded-3 border-0">
+                                        <input class="form-check-input ms-1 cursor-pointer" type="checkbox" name="is_public" id="isPublic" checked>
+                                        <label class="form-check-label ms-3 small text-muted cursor-pointer" for="isPublic">
+                                            Saya setuju data ini dipublikasikan di website E-Academic (Hall of Fame).
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="mt-5 pt-3">
+                                <button type="submit" class="btn btn-primary w-100 rounded-pill py-3 fw-bold shadow-lg hover-scale gradient-btn">
+                                    <i class="fa fa-paper-plane me-2"></i> Kirim Data Prestasi
+                                </button>
+                                <div class="text-center mt-3">
+                                    <a href="{% url 'home' %}" class="text-muted fw-bold small text-decoration-none hover-text-primary">
+                                        Batal, kembali ke beranda
+                                    </a>
+                                </div>
+                            </div>
+
+                        </form>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</section>
+
+<style>
+    .hero-upload {
+        background: linear-gradient(to bottom, rgba(0, 30, 60, 0.95), rgba(0, 51, 102, 0.9)), 
+                    url('https://images.unsplash.com/photo-1578269174936-2709b6aeb913?q=80&w=1920&auto=format&fit=crop');
+        background-size: cover; 
+        background-position: center; 
+        background-attachment: fixed;
+        padding-top: 180px; 
+        padding-bottom: 140px; 
+        margin-top: -85px; 
+        text-align: center; color: white;
+        position: relative; overflow: hidden;
+    }
+
+    .hero-pattern {
+        position: absolute; top: 0; left: 0; width: 100%; height: 100%; 
+        background-image: url('https://www.transparenttextures.com/patterns/cubes.png'); 
+        opacity: 0.1; z-index: 0;
+    }
+
+    .icon-wrapper {
+        width: 80px; height: 80px; 
+        background: rgba(255,255,255,0.1); 
+        border-radius: 50%; display: flex; align-items: center; justify-content: center;
+        backdrop-filter: blur(5px);
+    }
+    
+    .hero-desc { max-width: 700px; font-size: 1.1rem; }
+
+    .form-section { background-color: #f8f9fa; padding-bottom: 5rem; }
+    .form-container { margin-top: -100px; position: relative; z-index: 10; }
+
+    .section-title { font-size: 0.8rem; letter-spacing: 1px; border-bottom: 2px solid rgba(0,0,0,0.05); padding-bottom: 10px; display: inline-block; }
+
+    .form-control:focus, .form-select:focus {
+        box-shadow: 0 0 0 3px rgba(13, 110, 253, 0.1);
+        border: 1px solid #0d6efd;
+        background-color: #fff;
+    }
+    .cursor-pointer { cursor: pointer; }
+
+    .border-dashed { border-style: dashed !important; border-color: #cbd5e1 !important; }
+    .upload-area { transition: all 0.3s ease; background-color: #f8f9fa; overflow: hidden; }
+    .upload-area:hover { border-color: #ffc107 !important; background-color: #fff8e1; }
+    .upload-area:hover .bounce-hover { transform: translateY(-5px); transition: 0.3s; }
+
+    .file-input-absolute {
+        position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+        opacity: 0; cursor: pointer; z-index: 5;
+    }
+
+    .gradient-btn { background: linear-gradient(135deg, #0d6efd 0%, #0056b3 100%); border: none; }
+    .hover-scale:hover { transform: translateY(-2px); transition: 0.3s; }
+    .hover-text-primary:hover { color: #0d6efd !important; }
+
+    .animate-up { opacity: 0; transform: translateY(30px); animation: fadeInUp 0.8s ease forwards; }
+    .delay-1 { animation-delay: 0.2s; }
+    @keyframes fadeInUp { to { opacity: 1; transform: translateY(0); } }
+</style>
+
+<script>
+    function updateFileName(input) {
+        const file = input.files[0];
+        const placeholder = document.getElementById('upload-placeholder');
+        const fileInfo = document.getElementById('file-info');
+        const filenameText = document.getElementById('filename-text');
+
+        if (file) {
+            placeholder.classList.add('d-none');
+            fileInfo.classList.remove('d-none');
+            filenameText.textContent = file.name;
+        }
+    }
+</script>
+
+{% endblock %}
